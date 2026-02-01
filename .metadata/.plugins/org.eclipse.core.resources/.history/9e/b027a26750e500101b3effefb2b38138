@@ -1,0 +1,48 @@
+package org.jsp.employee_management_system.controller;
+
+import org.jsp.employee_management_system.entity.Employee;
+import org.jsp.employee_management_system.exception.IdNotFoundException;
+import org.jsp.employee_management_system.response_structure.ResponseStructure;
+import org.jsp.employee_management_system.service.EmployeeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class EmployeeController {
+	
+	@Autowired
+	EmployeeService empServ;
+
+	//design endPoint to save employee
+	@PostMapping("/jspiders/employees")
+	public ResponseEntity<ResponseStructure<Employee>> saveEmployee(@RequestBody Employee emp) {
+		ResponseStructure<Employee> rs = new ResponseStructure<Employee>();
+		rs.setStatusCode(HttpStatus.CREATED.value());
+		rs.setMessage("employee is created successfully...");
+		Employee e = empServ.saveEmployeeService(emp);
+		rs.setData(e);
+		return new ResponseEntity<ResponseStructure<Employee>>(rs,HttpStatus.CREATED);
+	}
+	
+	//design endPoint to fetch employee by id
+	@GetMapping("/jspiders/employees/{id}")
+	public ResponseEntity<ResponseStructure<Employee>> getEmployee(@PathVariable int id) {
+		Employee emp = empServ.getEmployeeService(id);
+		if(emp!=null) {
+			ResponseStructure<Employee> rs = new ResponseStructure<Employee>();
+			rs.setStatusCode(HttpStatus.CREATED.value());
+			rs.setMessage("successfully data fecthed");
+			rs.setData(emp);
+			return new ResponseEntity<ResponseStructure<Employee>>(rs,HttpStatus.CREATED);
+		}
+		else {
+			throw new IdNotFoundException("id not present");
+		}
+	}
+}
